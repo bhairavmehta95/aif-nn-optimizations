@@ -26,7 +26,7 @@ def rmse_loss(pred, targ):
     denom = torch.sqrt(denom.sum()/len(denom))
     return torch.sqrt(F.mse_loss(pred, targ))/denom
 
-def test_accuracy(net, device="cpu"):
+def test_accuracy(net):
     testset = get_dataloader('data/', 'test')
     testloader = torch.utils.data.DataLoader(
         testset,
@@ -39,13 +39,13 @@ def test_accuracy(net, device="cpu"):
 
     with torch.no_grad():
         for data in testloader:
-            images, labels = data
-            images, labels = images.to(device), labels.to(device)
-            outputs = net(images)
+            inputs, labels = data
+            inputs, labels = inputs.to(device), labels.to(device)
+            outputs = net(inputs)
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
 
-            total_loss += torch.sqrt(criterion(outputs, labels))
+            total_loss += rmse(outputs, labels)
 
     return total_loss / total
 
